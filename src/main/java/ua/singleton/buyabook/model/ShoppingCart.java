@@ -13,4 +13,20 @@ public class ShoppingCart {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Book> chosenBooks = new ArrayList<>();
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<Book> getChosenBooks() {
+        return chosenBooks;
+    }
+
+    public void setChosenBooks(List<Book> chosenBooks) {
+        this.chosenBooks = chosenBooks;
+    }
 }
