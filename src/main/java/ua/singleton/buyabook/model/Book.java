@@ -2,17 +2,28 @@ package ua.singleton.buyabook.model;
 
 import javax.persistence.*;
 import java.time.Year;
-import java.util.List;
 
 @Entity
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String title;
+
+    @Column(name = "published")
     private Year yearPublished;
+
+    private int amount;
+
     @Lob
     private byte[] icon;
-    private List<String> authors;
 
+    @ManyToOne
+    @JoinColumn(name = "fk_category")
+    private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_author")
+    private Author author;
 }

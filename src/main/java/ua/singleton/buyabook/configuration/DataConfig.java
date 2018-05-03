@@ -6,26 +6,39 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
 @PropertySource("application.properties")
+@EnableTransactionManagement
 public class DataConfig {
+
+    // Used to read settings from application.properties file
     @Autowired
     private Environment env;
 
+    /**
+     * Declare the JPA entity manager factory
+     */
     @Bean
-    public LocalSessionFactoryBean sessionFactory() {
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan(env.getProperty("buyabook.entity.package"));
-        sessionFactory.setHibernateProperties(hibernateProperties());
-        return sessionFactory;
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactory.setDataSource(dataSource());
+        entityManagerFactory.setPackagesToScan(env.getProperty("buyabook.entity.package"));
+        entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        entityManagerFactory.setJpaProperties(hibernateProperties());
+        return entityManagerFactory;
     }
 
+    /**
+     * DataSource definition for database connection
+     */
     @Bean
     public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
@@ -36,10 +49,21 @@ public class DataConfig {
         return dataSource;
     }
 
-    private final Properties hibernateProperties() {
+    // Hibernate properties
+    private Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.property.hbm2ddl"));
         properties.setProperty("hibernate.dialect", env.getProperty("hibernate.property.dialect"));
         return properties;
+    }
+
+    /**
+     * Declare the transaction manager
+     */
+    @Bean
+    public JpaTransactionManager transactionManager() {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+        return transactionManager;
     }
 }
