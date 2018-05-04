@@ -7,7 +7,7 @@ import java.time.Year;
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String title;
 
@@ -27,11 +27,13 @@ public class Book {
     @JoinColumn(name = "fk_author")
     private Author author;
 
-    public long getId() {
+    public Book() {}
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
